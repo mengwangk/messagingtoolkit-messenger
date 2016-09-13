@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MessagingToolkit.Messenger")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A Windows service based messaging solution")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("TWIT88.COM")]
 [assembly: AssemblyProduct("MessagingToolkit.Messenger")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright © TWIT88.COM  2016")]
+[assembly: AssemblyTrademark("TWIT88.COM")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3c3550c0-d27a-4574-b8c2-3366b7efecd9")]
+[assembly: Guid("a677b6c7-7107-4e88-91f4-ee78eb412ff3")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace MessagingToolkit.Messenger
 {
-    public partial class Service1 : ServiceBase
+    public partial class MessengerService : ServiceBase
     {
-        public Service1()
+        public MessengerService()
         {
             InitializeComponent();
         }

@@ -17,7 +17,7 @@ namespace MessagingToolkit.Messenger
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new Service1()
+                new MessengerService()
             };
             ServiceBase.Run(ServicesToRun);
         }

@@ -1,6 +1,6 @@
 ﻿namespace MessagingToolkit.Messenger
 {
-    partial class Service1
+    partial class MessengerService
     {
         /// <summary> 
         /// Required designer variable.
