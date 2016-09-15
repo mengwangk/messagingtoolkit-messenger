@@ -56,9 +56,44 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MessagingToolkit.Barcode, Version=1.8.2.0, Culture=neutral, PublicKeyToken=4d44dd7196d3c1ac, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MessagingToolkit.1.8.2.0\lib\net45\MessagingToolkit.Barcode.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagingToolkit.Core, Version=1.8.2.0, Culture=neutral, PublicKeyToken=4d44dd7196d3c1ac, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MessagingToolkit.1.8.2.0\lib\net45\MessagingToolkit.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagingToolkit.MMS, Version=1.8.2.0, Culture=neutral, PublicKeyToken=4d44dd7196d3c1ac, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MessagingToolkit.1.8.2.0\lib\net45\MessagingToolkit.MMS.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagingToolkit.Pdu, Version=1.8.2.0, Culture=neutral, PublicKeyToken=4d44dd7196d3c1ac, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MessagingToolkit.1.8.2.0\lib\net45\MessagingToolkit.Pdu.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagingToolkit.UI, Version=1.8.2.0, Culture=neutral, PublicKeyToken=4d44dd7196d3c1ac, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MessagingToolkit.1.8.2.0\lib\net45\MessagingToolkit.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagingToolkit.Wap, Version=1.8.2.0, Culture=neutral, PublicKeyToken=4d44dd7196d3c1ac, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MessagingToolkit.1.8.2.0\lib\net45\MessagingToolkit.Wap.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,21 +103,51 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\MessengerInitializer.cs" />
+    <Compile Include="GlobalConstants.cs" />
+    <Compile Include="Helper\EntityHelper.cs" />
+    <Compile Include="Helper\ImageHelper.cs" />
+    <Compile Include="Log\ConsoleLog.cs" />
+    <Compile Include="Log\ConsoleLogFactory.cs" />
+    <Compile Include="Log\ILog.cs" />
+    <Compile Include="Log\ILogFactory.cs" />
+    <Compile Include="Log\LogFactoryBase.cs" />
+    <Compile Include="Log\LogManager.cs" />
+    <Compile Include="Log\NLogLog.cs" />
+    <Compile Include="Log\NLogLogFactory.cs" />
     <Compile Include="MessengerService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MessengerService.Designer.cs">
       <DependentUpon>MessengerService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\DeviceInfo.cs" />
+    <Compile Include="Model\Employee.cs" />
+    <Compile Include="Model\Gateway.cs" />
+    <Compile Include="Model\IncomingMessage.cs" />
+    <Compile Include="Database\MessengerContext.cs" />
+    <Compile Include="Polling\OutgoingMessagePoller.cs" />
+    <Compile Include="Polling\Poller.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
@@ -96,6 +161,15 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SamplePhoto.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="sample_photo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
