@@ -84,7 +84,7 @@ namespace MessagingToolkit.Messenger.Polling
 
                                 // Multipart mixed
                                 mms.MultipartRelatedType = MultimediaMessageConstants.ContentTypeApplicationMultipartMixed;
-                                mms.PresentationId = EntityHelper.GenerateGuid();
+                                mms.PresentationId = "<0000>";
                                 mms.TransactionId = EntityHelper.GenerateGuid();
                                 mms.AddToAddress(msgInfo.PhoneNumber, MmsAddressType.PhoneNumber);
 
