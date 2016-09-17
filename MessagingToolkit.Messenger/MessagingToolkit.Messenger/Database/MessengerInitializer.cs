@@ -24,7 +24,7 @@ namespace MessagingToolkit.Messenger.Database
             // Get the sample photo
             string currentPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             byte[] samplePhoto = null;
-            string sampleFileFullPath = currentPath + Path.DirectorySeparatorChar + "sample_photo.png";
+            string sampleFileFullPath = currentPath + Path.DirectorySeparatorChar + "sample_photo.jpg";
             if (File.Exists(sampleFileFullPath))
             {
                 //Image image = Image.FromFile(sampleFileFullPath);
@@ -59,7 +59,7 @@ namespace MessagingToolkit.Messenger.Database
 
             // Add sample message for testing
             /*
-            string sampleMsg = "{\r\n  \"PhoneNumber\": \"0192292309\",\r\n  \"ReceivedDate\": \"2016-09-17T09:19:22+08:00\",\r\n  \"Timezone\": \"+8:00\",\r\n  \"Content\": \"001\",\r\n  \"MessageType\": 0,\r\n  \"TotalPiece\": 1,\r\n  \"CurrentPiece\": 0,\r\n  \"DeliveryStatus\": 0,\r\n  \"DestinationReceivedDate\": \"0001-01-01T00:00:00\",\r\n  \"ValidityTimestamp\": \"0001-01-01T00:00:00\",\r\n  \"Index\": 17,\r\n  \"MessageStatusType\": 0,\r\n  \"ReferenceNo\": 0,\r\n  \"SourcePort\": -1,\r\n  \"DestinationPort\": -1,\r\n  \"GatewayId\": \"Default\",\r\n  \"TotalPieceReceived\": 1,\r\n  \"Status\": 0,\r\n  \"RawMessage\": \"\",\r\n  \"Indexes\": [\r\n    17\r\n  ], \r\n  \"ServiceCentreAddress\": \"60160783001\",\r\n  \"ServiceCentreAddressType\": 2\r\n}";
+            string sampleMsg = "{\r\n  \"PhoneNumber\": \"0126868739\",\r\n  \"ReceivedDate\": \"2016-09-17T09:19:22+08:00\",\r\n  \"Timezone\": \"+8:00\",\r\n  \"Content\": \"001\",\r\n  \"MessageType\": 0,\r\n  \"TotalPiece\": 1,\r\n  \"CurrentPiece\": 0,\r\n  \"DeliveryStatus\": 0,\r\n  \"DestinationReceivedDate\": \"0001-01-01T00:00:00\",\r\n  \"ValidityTimestamp\": \"0001-01-01T00:00:00\",\r\n  \"Index\": 17,\r\n  \"MessageStatusType\": 0,\r\n  \"ReferenceNo\": 0,\r\n  \"SourcePort\": -1,\r\n  \"DestinationPort\": -1,\r\n  \"GatewayId\": \"Default\",\r\n  \"TotalPieceReceived\": 1,\r\n  \"Status\": 0,\r\n  \"RawMessage\": \"\",\r\n  \"Indexes\": [\r\n    17\r\n  ], \r\n  \"ServiceCentreAddress\": \"60160783001\",\r\n  \"ServiceCentreAddressType\": 2\r\n}";
             var msgs = new List<IncomingMessage>
             {
                  new IncomingMessage() { MsgContent = sampleMsg }

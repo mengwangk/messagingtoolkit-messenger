@@ -25,5 +25,7 @@ namespace MessagingToolkit.Messenger.Model
 
         public DateTime DateModified { get; set; }
 
+        //public bool AutoStart { get; set; }
+
     }
 }

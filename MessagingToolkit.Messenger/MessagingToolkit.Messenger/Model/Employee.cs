@@ -14,7 +14,7 @@ namespace MessagingToolkit.Messenger.Model
         {
             DateCreated = DateTime.Now;
             DateModified = DateTime.Now;
-            PhotoImageType = "image/png";    // Default to PNG
+            PhotoImageType = "image/jpg";    // Default to JPEG
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
