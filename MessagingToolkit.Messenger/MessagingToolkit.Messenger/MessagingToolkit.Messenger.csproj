@@ -182,6 +182,7 @@
     <None Include="Resources\SamplePhoto.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="sample_photo.jpg" />
     <Content Include="sample_photo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
