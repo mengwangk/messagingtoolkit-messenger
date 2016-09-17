@@ -27,6 +27,7 @@ namespace Messenger.Configurator
         private void btnGenerateModemConfiguration_Click(object sender, EventArgs e)
         {
             DeviceInfo deviceInfo = new DeviceInfo();
+            deviceInfo.DeviceName = "Huawei";
             deviceInfo.BaudRate = 115200;
             deviceInfo.DataBits = 8;
             deviceInfo.PortName = "COM8";

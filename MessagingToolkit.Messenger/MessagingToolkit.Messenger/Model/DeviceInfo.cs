@@ -69,6 +69,8 @@ namespace MessagingToolkit.Messenger.Model
     /// </example>
     public sealed class DeviceInfo
     {
+        public string DeviceName { get; set; }
+
         public int BaudRate { get; set; }
 
         public int DataBits { get; set; }

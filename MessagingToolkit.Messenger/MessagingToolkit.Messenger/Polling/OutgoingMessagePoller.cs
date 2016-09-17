@@ -36,7 +36,7 @@ namespace MessagingToolkit.Messenger.Polling
         public OutgoingMessagePoller(MessengerService messengerService, MessengerContext database)
             : base()
         {
-            this.messengerService = messengerService;           
+            this.messengerService = messengerService;
             this.database = database;
         }
 
@@ -105,8 +105,12 @@ namespace MessagingToolkit.Messenger.Polling
                                 database.SaveChanges();
                             }
                             else
-                            {
+                            {                              
                                 logger.Error("Unable to establish a data connection through the modem. Check if you modem support MMS");
+                                if (messenger.LastError != null)
+                                {
+                                    logger.Error(messenger.LastError.ToString());
+                                }
                             }
                         }
                         else
@@ -126,7 +130,7 @@ namespace MessagingToolkit.Messenger.Polling
             finally
             {
                 if (isDataConnectionAvailable)
-                {                    
+                {
                     messengerService.StartMessenger();
                 }
                 this.timer.Enabled = true;

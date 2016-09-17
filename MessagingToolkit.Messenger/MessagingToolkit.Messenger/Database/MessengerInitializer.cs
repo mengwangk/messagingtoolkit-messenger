@@ -27,8 +27,9 @@ namespace MessagingToolkit.Messenger.Database
             string sampleFileFullPath = currentPath + Path.DirectorySeparatorChar + "sample_photo.png";
             if (File.Exists(sampleFileFullPath))
             {
-                Image image = Image.FromFile(sampleFileFullPath);
-                samplePhoto = ImageHelper.ConvertImageToByteArray(image, ImageFormat.Png);
+                //Image image = Image.FromFile(sampleFileFullPath);
+                //samplePhoto = ImageHelper.ConvertImageToByteArray(image, ImageFormat.Png);
+                samplePhoto = ImageHelper.ImageFileToByteArray(sampleFileFullPath);
             }
             // Add sample employees
             var employees = new List<Employee>
@@ -42,11 +43,11 @@ namespace MessagingToolkit.Messenger.Database
 
 
             // ****** CHANGE THIS for your device *****************
-            string defaultGatewayConfig = "{\"BaudRate\": 115200,  \"DataBits\": 8, \"Handshake\": 0, \"PortName\": \"COM6\"," +
+            string defaultGatewayConfig = "{\"DeviceName\": \"Huawei\", \"BaudRate\": 115200,  \"DataBits\": 8, \"Handshake\": 0, \"PortName\": \"COM6\"," +
                                           "\"Parity\": 0, \"StopBits\": 1, \"Pin\": \"\", \"DisablePinCheck\": true," +
                                           "\"LicenseKey\": \"1234567890\", \"ProviderMMSC\": \"http://mms.digi.com.my/servlets/mms\", \"ProviderAPN\": \"digimms\"," +
                                           "\"ProviderWAPGateway\": \"203.92.128.160\", \"ProviderAPNAccount\": \"mms\", \"ProviderAPNPassword\": \"mms\"}";
-            string gatewayPhoneNumber = "0192292309";   // Phone number for your SIM card
+            string gatewayPhoneNumber = "0126868739";   // Phone number for your SIM card
 
             var gateways = new List<Gateway>
             {
