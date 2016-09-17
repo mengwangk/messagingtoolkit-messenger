@@ -271,7 +271,7 @@ namespace MessagingToolkit.Messenger
 
                 OutgoingMessagePoller outgoingMessagePoller = new OutgoingMessagePoller(this, this.database);
                 outgoingMessagePoller.Name = "OutgoingMsgPoller";
-                pollers.Add(outgoingMessagePoller);
+                pollers.Add(outgoingMessagePoller); 
 
                 Thread worker = new Thread(new ThreadStart(outgoingMessagePoller.StartTimer));
                 worker.IsBackground = true;
