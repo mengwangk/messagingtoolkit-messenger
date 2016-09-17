@@ -9,7 +9,7 @@ Once you downloaded the source code,
     * By default sample employee record will be created with sample photo.
     * CHANGE *defaultGatewayConfig* value to reflect your device configuration
     * CHANGE *gatewayPhoneNumber* to reflect your device phone number
-3. In App.config you can see the database connection string. By default the database is created in the application folder.
+3. In App.config you can see the database connection string. By default the database is created in the application folder and the initial name is "MessengerDb"
 4. The sample can be run in Console mode or install as Windows service.
     * For testing, run it from Visual Studio and you can see the log output in the Console
     * To deploy as Windows service, use "installutil MessagingToolkit.Messenger.exe"
