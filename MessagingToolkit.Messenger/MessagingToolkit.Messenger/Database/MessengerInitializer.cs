@@ -47,7 +47,7 @@ namespace MessagingToolkit.Messenger.Database
                                           "\"Parity\": 0, \"StopBits\": 1, \"Pin\": \"\", \"DisablePinCheck\": true," +
                                           "\"LicenseKey\": \"1234567890\", \"ProviderMMSC\": \"http://mms.digi.com.my/servlets/mms\", \"ProviderAPN\": \"digimms\"," +
                                           "\"ProviderWAPGateway\": \"203.92.128.160\", \"ProviderAPNAccount\": \"mms\", \"ProviderAPNPassword\": \"mms\"}";
-            string gatewayPhoneNumber = "0126868739";   // Phone number for your SIM card
+            string gatewayPhoneNumber = "0192292309";   // Phone number for your SIM card
 
             var gateways = new List<Gateway>
             {
