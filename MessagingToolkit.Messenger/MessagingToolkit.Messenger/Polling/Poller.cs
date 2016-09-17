@@ -16,9 +16,9 @@ namespace MessagingToolkit.Messenger.Polling
         protected static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
-        /// Default polling interval in milliseconds. Default 5 seconds
+        /// Default polling interval in milliseconds. Default 30 seconds
         /// </summary>
-        private const double DefaultPollingInterval = 5000;
+        private const double DefaultPollingInterval = 30000;
 
         // Track whether Dispose has been called.
         private bool disposed = false;

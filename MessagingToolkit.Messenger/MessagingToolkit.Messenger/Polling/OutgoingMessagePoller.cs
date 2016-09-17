@@ -8,6 +8,10 @@ using System.Timers;
 using MessagingToolkit.Core;
 using MessagingToolkit.Core.Base;
 using MessagingToolkit.Core.Mobile.Message;
+using MessagingToolkit.Messenger.Database;
+using MessagingToolkit.Messenger.Model;
+using MessagingToolkit.Messenger.Helper;
+using MessagingToolkit.MMS;
 
 namespace MessagingToolkit.Messenger.Polling
 {
@@ -19,12 +23,21 @@ namespace MessagingToolkit.Messenger.Polling
         private IMobileGateway messenger;
 
         /// <summary>
+        /// Database context
+        /// </summary>
+        private MessengerContext database;
+
+
+        private MessengerService messengerService;
+
+        /// <summary>
         /// Constructor
         /// </summary>
-        public OutgoingMessagePoller(IMobileGateway messenger)
+        public OutgoingMessagePoller(MessengerService messengerService, MessengerContext database)
             : base()
         {
-            this.messenger = messenger;
+            this.messengerService = messengerService;           
+            this.database = database;
         }
 
         /// <summary>
@@ -34,74 +47,77 @@ namespace MessagingToolkit.Messenger.Polling
         /// <param name="e"></param>
         public override void DoWork(object sender, ElapsedEventArgs e)
         {
+            bool isDataConnectionAvailable = false;
             try
             {
                 // Disable and wait until finish execution
                 this.timer.Enabled = false;
 
+                messenger = messengerService.Messenger;
                 if (messenger == null) return;
 
-                if (logger.IsInfoEnabled) logger.Info("Checking outgoing message");
+                if (logger.IsInfoEnabled) logger.Info("Checking unprocessed message");
 
-                /*
-                GetUnsentMessagesCommand command = new GetUnsentMessagesCommand();
-                Outgoing[] messages = CommandHandlerProxy.Process(command);
-                List<IMessage> outgoingMessages = new List<IMessage>(messages.Count());
-                foreach (Outgoing message in messages)
+                // Get unprocessed messages
+                List<IncomingMessage> unProcessedMsgs = database.IncomingMesages.Where(msg => msg.Status == IncomingMessage.ProcessingStatus.NotProcessed).ToList<IncomingMessage>();
+                if (unProcessedMsgs.Count > 0)
                 {
-
-                    OutgoingMessageType messageType = (OutgoingMessageType)StringEnum.Parse(typeof(OutgoingMessageType), message.msg_type);
-                    if (messageType == OutgoingMessageType.SMS)
+                    logger.Info("Processing " + unProcessedMsgs.Count + " messages");
+                    foreach (IncomingMessage msg in unProcessedMsgs)
                     {
-                        // Get the target routed gateway                    
-                        Sms sms = EntityHelper.FromCommonRepresentation<Sms>(message.msg_content);
-                        sms.Identifier = message.id;
-                        IGateway gateway = messageGatewayService.Router.GetRoute(sms);
-                        GetGatewayByIdCommand getGwCmd = new GetGatewayByIdCommand() { Id = gateway.Id };
-                        Gateway gwConfig = CommandHandlerProxy.Process(getGwCmd);
-                        if (gwConfig != null)
+                        MessageInformation msgInfo = EntityHelper.FromCommonRepresentation<MessageInformation>(msg.MsgContent);
+                        logger.Info("Processing message from " + msgInfo.PhoneNumber);
+
+                        // Check for matching employee
+
+                        string employeeID = msgInfo.Content;
+                        Employee employee = database.Employees.Find(employeeID);
+                        Gateway gateway = database.Gateways.Find(GlobalConstants.DefaultGatewayID);
+                        if (employee != null && gateway != null)
                         {
-                            if (!string.IsNullOrEmpty(gwConfig.smsc_no))
+                            if (messenger.InitializeDataConnection())
                             {
-                                sms.ServiceCenterNumber = gwConfig.smsc_no;
+                                isDataConnectionAvailable = true;
+
+                                // Send MMS
+                                Mms mms = Mms.NewInstance(employee.EmployeeName, gateway.GatewayPhoneNumber);
+
+                                // Multipart mixed
+                                mms.MultipartRelatedType = MultimediaMessageConstants.ContentTypeApplicationMultipartMixed;
+                                mms.PresentationId = EntityHelper.GenerateGuid();
+                                mms.TransactionId = EntityHelper.GenerateGuid();
+                                mms.AddToAddress(msgInfo.PhoneNumber, MmsAddressType.PhoneNumber);
+
+                                MultimediaMessageContent multimediaMessageContent = new MultimediaMessageContent();
+                                multimediaMessageContent.SetContent(employee.EmployeePhoto, 0, employee.EmployeePhoto.Length);
+                                multimediaMessageContent.ContentId = EntityHelper.GenerateGuid();
+                                multimediaMessageContent.Type = employee.PhotoImageType;
+                                mms.AddContent(multimediaMessageContent);
+                                if (messenger.Send(mms))
+                                {
+                                    msg.Status = IncomingMessage.ProcessingStatus.Processed;
+                                }
+                                else
+                                {
+                                    msg.Status = IncomingMessage.ProcessingStatus.Error;
+                                    msg.ErrorMsg = messenger.LastError.Message;
+                                }
+                                database.SaveChanges();
+                            }
+                            else
+                            {
+                                logger.Error("Unable to establish a data connection through the modem. Check if you modem support MMS");
                             }
                         }
-                        outgoingMessages.Add(sms);
-                    }
-                    else if (messageType == OutgoingMessageType.WAPPush)
-                    {
-                        Wappush wappush = EntityHelper.FromCommonRepresentation<Wappush>(message.msg_content);
-                        wappush.Identifier = message.id;
-                        IGateway gateway = messageGatewayService.Router.GetRoute(wappush);
-                        GetGatewayByIdCommand getGwCmd = new GetGatewayByIdCommand() { Id = gateway.Id };
-                        Gateway gwConfig = CommandHandlerProxy.Process(getGwCmd);
-                        if (gwConfig != null)
+                        else
                         {
-                            if (!string.IsNullOrEmpty(gwConfig.smsc_no))
-                            {
-                                wappush.ServiceCenterNumber = gwConfig.smsc_no;
-                            }
+                            // Employee not found
+                            msg.Status = IncomingMessage.ProcessingStatus.Error;
+                            msg.ErrorMsg = "Employee not found";
+                            database.SaveChanges();
                         }
-                        outgoingMessages.Add(wappush);
                     }
-                    else if (messageType == OutgoingMessageType.vCard)
-                    {
-
-                    }
-                    else if (messageType == OutgoingMessageType.vCalendar)
-                    {
-
-                    }
-
-                    // Update status to "Sending"
-                    message.status = StringEnum.GetStringValue(MessageStatus.Sending);
-                    UpdateOutgoingMessageCommand updateMsgCmd = new UpdateOutgoingMessageCommand() { Message = message };
-                    CommandHandlerProxy.Process(updateMsgCmd);
                 }
-                int count = messageGatewayService.SendMessages(outgoingMessages);
-                if (count > 0)
-                    logger.InfoFormat("Messages are queued for sending. Count of messages is [{0}]", count);
-                */
             }
             catch (Exception ex)
             {
@@ -109,8 +125,14 @@ namespace MessagingToolkit.Messenger.Polling
             }
             finally
             {
+                if (isDataConnectionAvailable)
+                {                    
+                    messengerService.StartMessenger();
+                }
                 this.timer.Enabled = true;
             }
         }
+
+
     }
 }

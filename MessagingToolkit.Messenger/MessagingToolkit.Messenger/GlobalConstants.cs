@@ -11,12 +11,7 @@ namespace MessagingToolkit.Messenger
         /// <summary>
         /// Default gateway name referencing the gateway in Gateway database table which will be used to send and receive message.
         /// </summary>
-        public const string DefaultGatewayName = "Default";
-
-
-        /// <summary>
-        /// Name for outgoing message poller
-        /// </summary>
-        public const string OutgoingMsgPollerName = "OutgoingMsgPoller";
+        public const string DefaultGatewayID = "Default";
+       
     }
 }

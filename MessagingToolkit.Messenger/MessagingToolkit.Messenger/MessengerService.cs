@@ -24,6 +24,7 @@ using MessagingToolkit.Core.Service;
 using MessagingToolkit.Core.Mobile.Event;
 using MessagingToolkit.Core.Mobile.Message;
 using MessagingToolkit.Messenger.Polling;
+using MessagingToolkit.Messenger.Helper;
 
 namespace MessagingToolkit.Messenger
 {
@@ -169,19 +170,89 @@ namespace MessagingToolkit.Messenger
             this.database = new MessengerContext();
         }
 
-        private void StartMessenger()
+        public void StartMessenger()
         {
             try
             {
-                logger.Info("Start messenger");
+                logger.Info("Starting messenger");
+                // Connect to the default gateway
+                Gateway gateway = database.Gateways.Find(GlobalConstants.DefaultGatewayID);
+                if (gateway != null && !string.IsNullOrEmpty(gateway.GatewayConfig))
+                {
+                    MobileGatewayConfiguration config = EntityHelper.FromCommonRepresentation<MobileGatewayConfiguration>(gateway.GatewayConfig);
 
-                // TODO
+                    // Set log level to debug
+                    config.LogLevel = Core.Log.LogLevel.Verbose;
+                    config.LogNameFormat = Core.Log.LogNameFormat.Name;
+                    //config.LogLocation = @"c:\temp";
 
-                logger.Info("Messenger started successfully");
+                    MessageGateway<IMobileGateway, MobileGatewayConfiguration> messageGateway = MessageGateway<IMobileGateway, MobileGatewayConfiguration>.NewInstance();
+                    messenger = messageGateway.Find(config);
+                    if (messenger == null)
+                    {
+                        string errorMsg = string.Format("Error connecting to gateway at port {0}. Check the log file", config.PortName);
+                        logger.ErrorFormat(errorMsg);
+                        throw new Exception(errorMsg);
+                    }
+                    messenger.Id = gateway.GatewayID;
+                    ConfigureMessenger();
+                    logger.InfoFormat("Successfully started messenger. Model is {0}. Port is {1}", messenger.DeviceInformation.Model, config.PortName);
+                }
+                else
+                {
+                    logger.Error("Unable to connect to gateway. Make sure you configure a gateway [" + GlobalConstants.DefaultGatewayID + "] in the Gateway database table");
+
+                }
             }
             catch (Exception ex)
             {
-                logger.Error("Error starting messenger", ex);
+                logger.Error(ex.ToString(), ex);
+            }
+        }
+
+        public void ConfigureMessenger()
+        {   
+            messenger.EnableNewMessageNotification(MessageNotification.StatusReport);
+            messenger.PollNewMessages = true;
+            messenger.MessageReceived += Messenger_MessageReceived;
+            messenger.MessageSendingFailed += Messenger_MessageSendingFailed;
+            messenger.MessageSent += Messenger_MessageSent;
+        }
+
+        private void Messenger_MessageSent(object sender, MessageEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Messenger_MessageSendingFailed(object sender, MessageErrorEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Messenger_MessageReceived(object sender, MessageReceivedEventArgs e)
+        {
+            MessageInformation receivedMessage = e.Message;
+            logger.InfoFormat("Received message from [{0}] on [{1}]", receivedMessage.PhoneNumber, receivedMessage.ReceivedDate.ToString());
+
+            // Save the message
+            SaveIncomingMessage(receivedMessage);
+        }
+
+        private void SaveIncomingMessage(MessageInformation message)
+        {
+            try
+            {
+                // Set this to blank to save database space
+                message.RawMessage = string.Empty;
+                message.DataBytes = null;
+
+                IncomingMessage msg = new IncomingMessage() { MsgContent = EntityHelper.ToCommonRepresentation<MessageInformation>(message) };
+                database.IncomingMesages.Add(msg);
+                database.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Failed to save message", ex);
             }
         }
 
@@ -198,13 +269,13 @@ namespace MessagingToolkit.Messenger
                 if (workerThreads == null) workerThreads = new List<Thread>(1);
                 if (pollers == null) pollers = new List<Poller>(1);
 
-                OutgoingMessagePoller outgoingMessagePoller = new OutgoingMessagePoller(this.messenger);
-                outgoingMessagePoller.Name = GlobalConstants.OutgoingMsgPollerName;
+                OutgoingMessagePoller outgoingMessagePoller = new OutgoingMessagePoller(this, this.database);
+                outgoingMessagePoller.Name = "OutgoingMsgPoller";
                 pollers.Add(outgoingMessagePoller);
 
                 Thread worker = new Thread(new ThreadStart(outgoingMessagePoller.StartTimer));
                 worker.IsBackground = true;
-                worker.Name = GlobalConstants.OutgoingMsgPollerName;
+                worker.Name = "OutgoingMsgPoller";
                 workerThreads.Add(worker);
                 worker.Start();
 
@@ -245,7 +316,7 @@ namespace MessagingToolkit.Messenger
         private void StopPoller()
         {
             try
-            {                
+            {
                 if (pollers == null) return;
                 foreach (Poller poller in pollers)
                 {
@@ -267,7 +338,7 @@ namespace MessagingToolkit.Messenger
                     {
                         logger.Error(string.Format("Error aborting thread [{0}]", t.Name), ex);
                     }
-                }                
+                }
                 workerThreads.Clear();
                 workerThreads = null;
             }
@@ -298,6 +369,14 @@ namespace MessagingToolkit.Messenger
             {
                 logger.Error("Error stopping service", ex);
             }
+        }
+
+        public IMobileGateway Messenger
+        {
+            get
+            {
+                return this.messenger;
+            } 
         }
     }
 }

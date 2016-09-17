@@ -11,6 +11,18 @@ namespace MessagingToolkit.Messenger.Model
     /// </summary>
     public class IncomingMessage
     {
+        public enum ProcessingStatus {
+            NotProcessed = 0,
+            Processed = 2,
+            Error = 3
+        }
+        public IncomingMessage()
+        {
+            DateCreated = DateTime.Now;
+            DateModified = DateTime.Now;
+            Status = ProcessingStatus.NotProcessed;
+        }
+
         public int ID { get; set; }
 
         public string MsgContent { get; set; }
@@ -19,7 +31,7 @@ namespace MessagingToolkit.Messenger.Model
 
         public DateTime DateModified { get; set; }
 
-        public bool IsProcessed { get; set; }
+        public ProcessingStatus Status { get; set; }
 
         public string ErrorMsg { get; set; }
     }
